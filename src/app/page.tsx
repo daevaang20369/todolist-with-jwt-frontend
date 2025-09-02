@@ -1,103 +1,211 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import axios from "axios";
+import { api } from "./api";
+import { Navigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: "",
+    dateofbirth: "",
+    email: "",
+    otp: "",
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const [step, setStep] = useState(1);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleregisteration = async () => {
+    try {
+      setError("");
+      setSuccess("");
+      const response = await axios.post(`${api}/register`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
+      setSuccess(response.data.message);
+      setStep(2);
+    } catch (err) {
+      setError(err.response?.data?.message || "all fields required");
+    }
+  };
+  const handlesendotp = async () => {
+    setError("");
+    setSuccess("");
+    const response = await axios.post(`${api}/sendotp`, formData, {
+      headers: { "Content-Type": "application/json" },
+    });
+    setSuccess(response.data.message);
+    console.log(response);
+  };
+
+  const handleotpverify = async () => {
+    try {
+      setError("");
+      setSuccess("");
+      if(formData.otp == ""){
+        return setError("Enter otp before continue")
+      }
+      const response = await axios.post(`${api}/verify`, formData, {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+
+      });
+      setSuccess(response.data.message);
+      if (response.status === 200) {
+        alert("Login successful!");
+        const { accesstoken } = response.data;
+        if (accesstoken) {
+          localStorage.setItem("accessToken", accesstoken);
+          router.push("/notes")
+        } else {
+          console.log("Token Not Received");
+        }
+        console.log(response);
+        return;
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(error.response.data.message || "Login failed");
+      setError(error.response.data.message)
+      
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (step === 1) {
+      handleregisteration();
+    } else if (step === 2) {
+      handlesendotp();
+      setStep(3);
+    } else {
+      handleotpverify();
+    }
+  };
+
+  return (
+    <div className="signup">
+      <div className="signup-left">
+        <img className="logo" src={"logo.svg"} alt="logo" />
+        <div className="signup-form">
+          <form onSubmit={handleSubmit}>
+            <div className="heading">Sign up</div>
+            <div className="sub-heading">
+              {step === 1
+                ? "Sign up to enjoy the features of HD"
+                : "Enter OTP sent to your email"}
+              {error && (
+                <p style={{ color: "red" }} className="error-text">
+                  {error}
+                </p>
+              )}
+              {success && (
+                <p style={{ color: "lightgreen" }} className="success-text">
+                  {success}
+                </p>
+              )}
+            </div>
+
+            {step === 1 && (
+              <>
+                <div className="input-group">
+                  <label htmlFor="name">Full Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-group">
+                  <label className="doblabel" htmlFor="dateofbirth">
+                    Date of birth
+                  </label>
+                  <input
+                    type="date"
+                    id="dateofbirth"
+                    name="dateofbirth"
+                    value={formData.dateofbirth}
+                    // placeholder="DD/MM/YYYY"
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="input-group">
+              <label htmlFor="email">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {step != 1 && (
+              <div className="input-group">
+                <label htmlFor="otp">OTP</label>
+                <input
+                  type="number"
+                  id="otp"
+                  name="otp"
+                  value={formData.otp}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            )}
+            {step != 1 && (
+              <div className="Signinlink">
+                Didnt received Otp?{" "}
+                <button onClick={handlesendotp}> send again</button>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="btn btn-submit"
+            >
+              {step === 1 ? "Register" : step === 2 ? "Send OTP" : "Verify OTP"}
+            </button>
+          </form>
+
+          {step == 1 ? (
+            <div className="Signinlink">
+              Already have an account?{" "}
+              <button onClick={() => setStep(2)}>Sign in</button>
+            </div>
+          ) : (
+            <div className="Signinlink">
+              Dont have an account?{" "}
+              <button onClick={() => setStep(1)}>Sign up</button>
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <div className="signup-right">
+        <img src={"sigupphoto.png"} alt="signup" />
+      </div>
     </div>
   );
 }

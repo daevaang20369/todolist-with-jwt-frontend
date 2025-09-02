@@ -14,13 +14,209 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Inter";
+}
+.logo {
+  position: absolute;
+  left: 3rem;
+  top: 3rem;
+}
+.signup-form {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  min-width: 400px;
+  width: 50%;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+}
+.heading {
+  align-items: start;
+  font-size: 3rem;
+  font-weight: 600;
+  width: 100%;
+}
+.sub-heading {
+  width: 100%;
+}
+.signup {
+  display: flex;
+}
+.signup-left {
+  min-width: 500px;
+  padding: 1rem;
+  flex: 1;
+  /* max-width: 35%;   */
+}
+.signup-right {
+  flex: 1;
+  min-height: 100vh;
+  height: 100vh;
+  color: white;
+}
+.signup-right img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 3rem;
+  margin: 0;
+  border: white 10px solid;
+}
+.input-group {
+  /* background-color: #000000; */
+  width: 100%;
+}
+.input-group label {
+  padding-inline: 0.5rem;
+  display: block;
+  width: max-content;
+  color: grey;
+  font-size: 0.9rem;
+  translate: 20px 50%;
+  background-color: #ffffff;
+  font-weight: 500;
+}
+.input-group input {
+  height: 3rem;
+  padding: 1rem;
+  width: 100%;
+  display: block;
+  border: 1px solid rgb(219, 219, 219);
+  border-radius: 0.7rem;
+}
+.input-group input:focus,
+label:focus {
+  outline: none;
+  border: 2px solid #367aff;
+}
+
+input:focus + .labelinput {
+  color: #367aff !important;
+  border: 1rem solid black;
+}
+/* input[type="date"]::-webkit-calendar-picker-indicator {
+  color: rgba(0, 0, 0, 0);
+  opacity: 1;
+  display: block;
+  background-repeat:  no-repeat;
+  width: 25px;
+  height: 25px;
+  border-width: thin
+} */
+.input-group > input[type="date"] {
+  position: relative;
+  z-index: 0;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  left: 5%;
+  z-index: 20;
+}
+/* input::-webkit-datetime-edit-fields-wrapper {
+  position: relative;
+  left: 10%;
+} */
+input::-webkit-datetime-edit {
+  position: relative;
+  left: 10%;
+  z-index: 20;
+}
+.doblabel {
+  position: relative;
+  z-index: 10 !important;
+}
+.btn-submit {
+  padding: 1rem;
+  background-color: #367aff;
+  color: rgb(255, 255, 255);
+  margin: 1rem 0rem 1rem 0rem;
+  width: 100%;
+  border-radius: 1rem;
+}
+.Signinlink {
+  color: #6d6d6d;
+}
+.Signinlink > button {
+  color: #367aff;
+  font-weight: 500;
+}
+.Signinlink > button:hover {
+  color: #367aff;
+  text-decoration: underline;
+}
+form {
+  width: 100%;
+}
+
+.textareadiv > input {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+.textareadiv {
+  margin-top: 1rem;
+  display: flex;
+  width: 100%;
+  border-radius: 1rem;
+  border: #c5c5c5 1px solid;
+}
+.textareadiv > input:focus {
+  outline: none;
+  border-radius: 1rem;
+  border: #367aff 1px solid;
+}
+.todo {
+  font-size: 16px;
+  margin-top: 1rem;
+  font-weight: 500;
+  color: #1f2937; /* gray-900 */
+  background: white;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e5e7eb;
+  text-decoration: none;
+  color: #374151; /* gray-700 */
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.todo-item:last-child {
+  border-bottom: none;
+  border-radius: 0 0 8px 8px;
+}
+
+.todo-item:first-child {
+  border-radius: 8px 8px 0 0;
+}
+
+.todo-item.active {
+  background: #1d4ed8; /* blue-700 */
+  color: white;
+}
+
+.todo-item:hover {
+  background: #f3f4f6; /* gray-100 */
+  color: #1d4ed8; /* blue-700 */
+}
+.completed{
+  text-decoration: line-through;
 }
