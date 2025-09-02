@@ -2,7 +2,6 @@
 import { useState } from "react";
 import axios from "axios";
 import { api } from "./api";
-import { Navigate } from "react-router-dom";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
